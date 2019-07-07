@@ -3,10 +3,10 @@
 This project is the second in a series for Udacity's Sensor Fusion Nanodegree. The project covers the following key concepts:
 
 - Using ring buffers to avoid memory bloat while processing a sequence of images
-- Keypoint detectors such as: Shi-Tomasi, Harris, FAST, BRISK, ORB, AKAZE, SIFT
-- Keypoint descriptor extraction and matching with: FLANN, k-NN
+- Keypoint detectors such as: Shi-Tomasi, Harris, FAST, BRISK, ORB, AKAZE, and SIFT
+- Keypoint descriptor extraction and matching with: FLANN and k-NN
 
-This project provides the foundation for the following project: time-to-collision estimation.
+These techniques provide a foundation for the next step: time-to-collision estimation.
 
 ## Visualization of the results
 <img src="images/sift-keypoints.png" width="903" height="339" />
