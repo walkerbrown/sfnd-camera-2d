@@ -7,7 +7,6 @@
 #include <deque>
 #include <cmath>
 #include <limits>
-#include <cassert>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -77,25 +76,54 @@ int main(int argc, const char *argv[])
         /* DETECT IMAGE KEYPOINTS */
 
         // extract 2D keypoints from current image
-        vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI";
+        vector<cv::KeyPoint> keypoints;
+
+        // string detectorType = "SHITOMASI";
+        // string detectorType = "HARRIS";
+        // string detectorType = "FAST";
+        // string detectorType = "BRISK";
+        // string detectorType = "ORB";
+        // string detectorType = "AKAZE";
+        string detectorType = "SIFT";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
+        // Shi-Tomasi
         if (detectorType.compare("SHITOMASI") == 0)
         {
             detKeypointsShiTomasi(keypoints, imgGray, false);
         }
+
+        // Harris
+        else if (detectorType.compare("HARRIS") == 0)
+        {
+            detKeypointsHarris(keypoints, imgGray, false);
+        }
+
+        // Modern detector types, including FAST, BRISK, ORB, AKAZE, and SIFT
+        else if (detectorType.compare("FAST")  == 0 ||
+                 detectorType.compare("BRISK") == 0 ||
+                 detectorType.compare("ORB")   == 0 ||
+                 detectorType.compare("AKAZE") == 0 ||
+                 detectorType.compare("SIFT")  == 0)
+        {
+            detKeypointsModern(keypoints, imgGray, detectorType, false);
+        }
+
+        // Specified detectorType is unsupported
         else
         {
-            //...
+            throw invalid_argument(detectorType + " is not a valid detectorType");
         }
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
+
+        // NOTICE: Please use this cropping method for dev evaluation only.
+        // All keypoints should be considered in the upcoming final project.
 
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
