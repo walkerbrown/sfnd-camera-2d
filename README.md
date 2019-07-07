@@ -9,7 +9,7 @@ This project is the second in a series for Udacity's Sensor Fusion Nanodegree. T
 This project provides the foundation for the following project: time-to-collision estimation.
 
 ## Visualization of the results
-<img src="images/sift-keypoints.png" width="820" height="248" />
+<img src="images/sift-keypoints.png" width="903" height="339" />
 
 ## Overview of the workflow
 1. Load the images into a ring buffer. 
