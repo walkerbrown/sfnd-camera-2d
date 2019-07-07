@@ -125,12 +125,16 @@ int main(int argc, const char *argv[])
         // NOTICE: Please use this cropping method for dev evaluation only.
         // All keypoints should be considered in the upcoming final project.
 
-        // only keep keypoints on the preceding vehicle
+        // Filter with a hardcoded bounding box to keep only keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            vector<cv::KeyPoint> filteredKeypoints;
+            for (auto kp : keypoints) {
+                if (vehicleRect.contains(kp.pt)) filteredKeypoints.push_back(kp);
+            }
+            keypoints = filteredKeypoints;
         }
 
         //// EOF STUDENT ASSIGNMENT
