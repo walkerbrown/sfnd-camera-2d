@@ -5,53 +5,109 @@ using namespace std;
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
-                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
+                      std::vector<cv::DMatch> &matches, std::string descriptorCategory, std::string matcherType, std::string selectorType)
 {
-    // configure matcher
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
+    // Brute force with Hamming distance
     if (matcherType.compare("MAT_BF") == 0)
     {
         int normType = cv::NORM_HAMMING;
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
+
+    // FLANN matching
     else if (matcherType.compare("MAT_FLANN") == 0)
     {
-        // ...
+        // with SIFT
+        if (descriptorCategory.compare("DES_HOG") == 0)
+        {
+            matcher = cv::FlannBasedMatcher::create();
+        }
+
+        // with all other binary descriptorTypes
+        else if (descriptorCategory.compare("DES_BINARY") == 0)
+        {
+            const cv::Ptr<cv::flann::IndexParams>& indexParams = cv::makePtr<cv::flann::LshIndexParams>(12, 20, 2);
+            matcher = cv::makePtr<cv::FlannBasedMatcher>(indexParams);
+        }
+
+        else {
+            throw invalid_argument(descriptorCategory + " is not a valid descriptorCategory");
+        }
     }
 
-    // perform matching task
+    else {
+        throw invalid_argument(matcherType + " is not a valid matcherType");
+    }
+
+    // Perform nearest neighbor matching (best match)
     if (selectorType.compare("SEL_NN") == 0)
-    { // nearest neighbor (best match)
-
-        matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
+    {
+        matcher->match(descSource, descRef, matches);
     }
+    
+    // Perform k nearest neighbors (k=2)
     else if (selectorType.compare("SEL_KNN") == 0)
-    { // k nearest neighbors (k=2)
+    {
+        int k = 2;
+        vector<vector<cv::DMatch>> knn_matches;
+        matcher->knnMatch(descSource, descRef, knn_matches, k);
+        
+        // Filter matches using descriptor distance ratio test
+        double minDescDistRatio = 0.8;
+        for (auto it : knn_matches) {
+            // The returned knn_matches vector contains some nested vectors with size < 2 !?
+            if ( 2 == it.size() && (it[0].distance < minDescDistRatio * it[1].distance) ) {
+                matches.push_back(it[0]);
+            }
+        }
+    }
 
-        // ...
+    else {
+        throw invalid_argument(selectorType + " is not a valid selectorType");
     }
 }
 
 // Use one of several types of state-of-art descriptors to uniquely identify keypoints
 void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
 {
-    // select appropriate descriptor
+    // Select appropriate descriptor, using default values for now
     cv::Ptr<cv::DescriptorExtractor> extractor;
+    
     if (descriptorType.compare("BRISK") == 0)
     {
-
         int threshold = 30;        // FAST/AGAST detection threshold score.
         int octaves = 3;           // detection octaves (use 0 to do single scale)
         float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
     }
+    else if (descriptorType.compare("BRIEF") == 0)
+    {
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
+    }
+    else if (descriptorType.compare("ORB") == 0)
+    {
+        extractor = cv::ORB::create();
+    }
+    else if (descriptorType.compare("FREAK") == 0)
+    {
+        extractor = cv::xfeatures2d::FREAK::create();
+    }
+    else if (descriptorType.compare("AKAZE") == 0)
+    {
+        extractor = cv::AKAZE::create();
+    }
+    else if (descriptorType.compare("SIFT") == 0)
+    {
+        extractor = cv::xfeatures2d::SIFT::create();
+    }
     else
     {
-
-        //...
+        // Specified descriptorType is unsupported
+        throw invalid_argument(descriptorType + " is not a valid descriptorType");
     }
 
     // perform feature description

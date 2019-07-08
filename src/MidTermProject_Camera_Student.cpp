@@ -78,13 +78,13 @@ int main(int argc, const char *argv[])
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints;
 
-        // string detectorType = "SHITOMASI";
+        string detectorType = "SHITOMASI";
         // string detectorType = "HARRIS";
         // string detectorType = "FAST";
         // string detectorType = "BRISK";
         // string detectorType = "ORB";
         // string detectorType = "AKAZE";
-        string detectorType = "SIFT";
+        // string detectorType = "SIFT";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -136,7 +136,6 @@ int main(int argc, const char *argv[])
             }
             keypoints = filteredKeypoints;
         }
-
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
@@ -164,7 +163,13 @@ int main(int argc, const char *argv[])
         //// -> BRIEF, ORB, FREAK, AKAZE, SIFT
 
         cv::Mat descriptors;
-        string descriptorType = "BRISK"; // BRIEF, ORB, FREAK, AKAZE, SIFT
+        // string descriptorType = "BRISK";
+        // string descriptorType = "BRIEF";
+        string descriptorType = "ORB";  // Fails with detectors: SIFT
+        // string descriptorType = "FREAK";
+        // string descriptorType = "AKAZE";  // Fails with detectors: SHITOMASI, HARRIS, FAST
+        // string descriptorType = "SIFT";   // Fails with detectors: SHITOMASI, HARRIS, FAST
+
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
 
@@ -177,11 +182,26 @@ int main(int argc, const char *argv[])
         {
 
             /* MATCH KEYPOINT DESCRIPTORS */
-
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
-            string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+
+            /* Select brute force (BF) or Fast Library for Approximate Nearest Neighbors (FLANN) */
+            // string matcherType = "MAT_BF";
+            string matcherType = "MAT_FLANN";
+            
+            /* For descriptor type, select binary (BINARY) or histogram of gradients (HOG) */
+            /* BINARY descriptors include: BRISK, BRIEF, ORB, FREAK, and (A)KAZE. */
+            /* HOG descriptors include: SIFT (and SURF and GLOH, all patented). */
+            string descriptorCategory {};
+            if (0 == descriptorType.compare("SIFT")) {
+                descriptorCategory = "DES_HOG";
+            }
+            else {
+                descriptorCategory = "DES_BINARY";
+            }
+
+            /* For selector type, choose nearest neighbors (NN) or k nearest neighbors (KNN) */
+            // string selectorType = "SEL_NN";
+            string selectorType = "SEL_KNN";
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -189,7 +209,7 @@ int main(int argc, const char *argv[])
 
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
-                             matches, descriptorType, matcherType, selectorType);
+                             matches, descriptorCategory, matcherType, selectorType);
 
             //// EOF STUDENT ASSIGNMENT
 

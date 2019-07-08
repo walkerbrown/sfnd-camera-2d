@@ -13,7 +13,7 @@ These techniques provide a foundation for the next step: time-to-collision estim
 
 ## Overview of the workflow
 1. Load the images into a ring buffer. 
-1. Use OpenCV to apply a variety of keypoint _detectors_.
+1. Use OpenCV to apply a variety of keypoint detectors.
   - Shi-Tomasi
   - Harris
   - FAST
@@ -21,8 +21,12 @@ These techniques provide a foundation for the next step: time-to-collision estim
   - ORB
   - AKAZE
   - SIFT (Patent encumbered, https://patents.google.com/patent/US6711293B1/en)
-<!-- 1. Use FLANN and kNN to improve on the brute force matching of keypoint _descriptors_. -->
+<!-- 1. Use FLANN and kNN to improve on the brute force matching of keypoint descriptors. -->
 <!-- 1. Finally, run these algorithms in various combinations to compare performance benchmarks.  -->
+
+It's important to distinguish between the terms of art keypoint **detector** and keypoint **descriptor**. From Udacity's lecture notes:
+> - A keypoint (sometimes also interest point or salient point) detector is an algorithm that chooses points from an image based on a local maximum of a function, such as the "cornerness" metric we saw with the Harris detector.
+> - A descriptor is a vector of values, which describes the image patch around a keypoint. There are various techniques ranging from comparing raw pixel values to much more sophisticated approaches such as histograms of gradient orientations.
 
 ## Dependencies
 * cmake >= 2.8
@@ -48,4 +52,22 @@ make
 ./2D_feature_tracking
 ```
 
-## Comments
+## Comments, Task MP.0
+
+### MP.1 Data buffer optimization
+
+### MP.2 Keypoint detection
+
+### MP.3 Keypoint removal
+
+### MP.4 Keypoint descriptors
+
+### MP.5 Descriptor matching
+
+### MP.6 Descriptor distance ratio
+
+### MP.7 Performance evaluation 1
+
+### MP.8 Performance evaluation 2
+
+### MP.9 Performance evaluation 3
