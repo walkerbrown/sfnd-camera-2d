@@ -71,20 +71,20 @@ int main(int argc, const char *argv[])
         assert(dataBuffer.size() <= dataBufferSize);
 
         //// EOF STUDENT ASSIGNMENT
-        cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
+        // cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
 
         /* DETECT IMAGE KEYPOINTS */
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints;
 
-        string detectorType = "SHITOMASI";
+        // string detectorType = "SHITOMASI";
         // string detectorType = "HARRIS";
         // string detectorType = "FAST";
         // string detectorType = "BRISK";
         // string detectorType = "ORB";
         // string detectorType = "AKAZE";
-        // string detectorType = "SIFT";
+        string detectorType = "SIFT";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -136,6 +136,14 @@ int main(int argc, const char *argv[])
             }
             keypoints = filteredKeypoints;
         }
+
+        // Task MP.7 Counting keypoints
+        cout << detectorType << ",";
+        cout << keypoints.size() << ",";
+        if (keypoints.size() > 0) {
+            auto kp = keypoints[0];
+            cout << kp.size << endl;
+        }
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
@@ -154,7 +162,7 @@ int main(int argc, const char *argv[])
 
         // push keypoints and descriptor for current frame to end of data buffer
         (dataBuffer.end() - 1)->keypoints = keypoints;
-        cout << "#2 : DETECT KEYPOINTS done" << endl;
+        // cout << "#2 : DETECT KEYPOINTS done" << endl;
 
         /* EXTRACT KEYPOINT DESCRIPTORS */
 
@@ -176,7 +184,7 @@ int main(int argc, const char *argv[])
         // push descriptors for current frame to end of data buffer
         (dataBuffer.end() - 1)->descriptors = descriptors;
 
-        cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
+        // cout << "#3 : EXTRACT DESCRIPTORS done" << endl;
 
         if (dataBuffer.size() > 1) // wait until at least two images have been processed
         {
@@ -211,12 +219,13 @@ int main(int argc, const char *argv[])
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
                              matches, descriptorCategory, matcherType, selectorType);
 
+            // cout << matches.size() << endl;
             //// EOF STUDENT ASSIGNMENT
 
             // store matches in current data frame
             (dataBuffer.end() - 1)->kptMatches = matches;
 
-            cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
+            // cout << "#4 : MATCH KEYPOINT DESCRIPTORS done" << endl;
 
             // visualize matches between current and previous image
             bVis = true;
@@ -232,7 +241,7 @@ int main(int argc, const char *argv[])
                 string windowName = "Matching keypoints between two camera images";
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
-                cout << "Press key to continue to next image" << endl;
+                // cout << "Press key to continue to next image" << endl;
                 cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
