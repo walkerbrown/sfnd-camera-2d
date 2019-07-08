@@ -10,10 +10,27 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     bool crossCheck = false;
     cv::Ptr<cv::DescriptorMatcher> matcher;
 
-    // Brute force with Hamming distance
+    // Brute force
     if (matcherType.compare("MAT_BF") == 0)
     {
-        int normType = cv::NORM_HAMMING;
+        int normType;
+
+        // with SIFT
+        if (descriptorCategory.compare("DES_HOG") == 0)
+        {
+            normType = cv::NORM_L2;
+        }
+
+        // with all other binary descriptors
+        else if (descriptorCategory.compare("DES_BINARY") == 0)
+        {
+            normType = cv::NORM_HAMMING;
+        }
+        
+        else {
+            throw invalid_argument(descriptorCategory + " is not a valid descriptorCategory");
+        }
+
         matcher = cv::BFMatcher::create(normType, crossCheck);
     }
 

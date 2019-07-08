@@ -165,10 +165,10 @@ int main(int argc, const char *argv[])
         cv::Mat descriptors;
         // string descriptorType = "BRISK";
         // string descriptorType = "BRIEF";
-        string descriptorType = "ORB";  // Fails with detectors: SIFT
+        // string descriptorType = "ORB";  // Fails with detectors: SIFT
         // string descriptorType = "FREAK";
         // string descriptorType = "AKAZE";  // Fails with detectors: SHITOMASI, HARRIS, FAST
-        // string descriptorType = "SIFT";   // Fails with detectors: SHITOMASI, HARRIS, FAST
+        string descriptorType = "SIFT";   // Fails with detectors: SHITOMASI, HARRIS, FAST
 
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
@@ -185,8 +185,8 @@ int main(int argc, const char *argv[])
             vector<cv::DMatch> matches;
 
             /* Select brute force (BF) or Fast Library for Approximate Nearest Neighbors (FLANN) */
-            // string matcherType = "MAT_BF";
-            string matcherType = "MAT_FLANN";
+            string matcherType = "MAT_BF";
+            // string matcherType = "MAT_FLANN";
             
             /* For descriptor type, select binary (BINARY) or histogram of gradients (HOG) */
             /* BINARY descriptors include: BRISK, BRIEF, ORB, FREAK, and (A)KAZE. */
