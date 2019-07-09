@@ -80,15 +80,18 @@ int main(int argc, const char *argv[])
 
         // string detectorType = "SHITOMASI";
         // string detectorType = "HARRIS";
-        // string detectorType = "FAST";
+        string detectorType = "FAST";
         // string detectorType = "BRISK";
         // string detectorType = "ORB";
         // string detectorType = "AKAZE";
-        string detectorType = "SIFT";
+        // string detectorType = "SIFT";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
+        
+        // Start MP.9 detector timer
+        double det_t = (double)cv::getTickCount();
 
         // Shi-Tomasi
         if (detectorType.compare("SHITOMASI") == 0)
@@ -117,6 +120,9 @@ int main(int argc, const char *argv[])
         {
             throw invalid_argument(detectorType + " is not a valid detectorType");
         }
+
+        // Task MP.9 detector timing
+        det_t = ((double)cv::getTickCount() - det_t) / cv::getTickFrequency();
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
@@ -138,12 +144,12 @@ int main(int argc, const char *argv[])
         }
 
         // Task MP.7 Counting keypoints
-        cout << detectorType << ",";
-        cout << keypoints.size() << ",";
-        if (keypoints.size() > 0) {
-            auto kp = keypoints[0];
-            cout << kp.size << endl;
-        }
+        // cout << detectorType << ",";
+        // cout << keypoints.size() << ",";
+        // if (keypoints.size() > 0) {
+        //     auto kp = keypoints[0];
+        //     cout << kp.size << endl;
+        // }
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
@@ -173,10 +179,10 @@ int main(int argc, const char *argv[])
         cv::Mat descriptors;
         // string descriptorType = "BRISK";
         // string descriptorType = "BRIEF";
-        // string descriptorType = "ORB";  // Fails with detectors: SIFT
+        string descriptorType = "ORB";
         // string descriptorType = "FREAK";
-        // string descriptorType = "AKAZE";  // Fails with detectors: SHITOMASI, HARRIS, FAST
-        string descriptorType = "SIFT";   // Fails with detectors: SHITOMASI, HARRIS, FAST
+        // string descriptorType = "AKAZE";  // Fails with all non-AKAZE detectors
+        // string descriptorType = "SIFT";  // Fails with ORB detectors
 
         descKeypoints((dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->cameraImg, descriptors, descriptorType);
         //// EOF STUDENT ASSIGNMENT
@@ -215,11 +221,20 @@ int main(int argc, const char *argv[])
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
             //// TASK MP.6 -> add KNN match selection and perform descriptor distance ratio filtering with t=0.8 in file matching2D.cpp
 
+            double desc_t = (double)cv::getTickCount();
+
             matchDescriptors((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints,
                              (dataBuffer.end() - 2)->descriptors, (dataBuffer.end() - 1)->descriptors,
                              matches, descriptorCategory, matcherType, selectorType);
+            
+            desc_t = ((double)cv::getTickCount() - desc_t) / cv::getTickFrequency();
 
-            // cout << matches.size() << endl;
+            cout << detectorType << ",";
+            cout << descriptorType << ",";
+            cout << matches.size() << ",";
+            cout << 1000 * det_t / 1.0 << ",";
+            cout << 1000 * desc_t / 1.0 << ",";
+            cout << (1000 * det_t / 1.0) + (1000 * desc_t / 1.0) << endl;
             //// EOF STUDENT ASSIGNMENT
 
             // store matches in current data frame
@@ -241,7 +256,7 @@ int main(int argc, const char *argv[])
                 string windowName = "Matching keypoints between two camera images";
                 cv::namedWindow(windowName, 7);
                 cv::imshow(windowName, matchImg);
-                // cout << "Press key to continue to next image" << endl;
+                cout << "Press key to continue to next image" << endl;
                 cv::waitKey(0); // wait for key to be pressed
             }
             bVis = false;
